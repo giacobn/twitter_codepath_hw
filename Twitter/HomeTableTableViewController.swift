@@ -19,11 +19,12 @@ class HomeTableTableViewController: UITableViewController {
         loadTweet()
         myRefreshControll.addTarget(self, action: #selector(loadTweet), for: .valueChanged)
         tableView.refreshControl = myRefreshControll
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        self.tableView.rowHeight=UITableView.automaticDimension
+        self.tableView.estimatedRowHeight = 150
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        self.loadTweet()
     }
 
     
@@ -31,7 +32,7 @@ class HomeTableTableViewController: UITableViewController {
         numberofTweet = 20
         let myUrl="https://api.twitter.com/1.1/statuses/home_timeline.json"
         let myParams=["count": numberofTweet]
-        TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: myParams, success: { (tweets: [NSDictionary]) in
+        TwitterAPICaller.client?.getDictionariesRequest(url: myUrl, parameters: myParams as [String : Any], success: { (tweets: [NSDictionary]) in
             self.tweetArray.removeAll()
             for tweet in tweets{
                 self.tweetArray.append(tweet)
@@ -93,6 +94,9 @@ class HomeTableTableViewController: UITableViewController {
             cell.profileImageView.image = UIImage(data: imageData)
         }
         
+        cell.setFavorite(isFavorited: tweetArray[indexPath.row]["favorited"] as! Bool)
+        cell.tweetId = tweetArray[indexPath.row]["id"] as! Int
+     
         
         return cell
     }
